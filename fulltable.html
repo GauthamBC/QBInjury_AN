@@ -4,496 +4,512 @@
   <meta charset="UTF-8" />
   <title>Quarterback Injury Index – Teams & Players</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
  <style>
-    /* ---------- Page layout + tabs ---------- */
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      background: #f5f7fb;
-      margin: 0;
-      padding: 24px;
-    }
-    .page-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      padding: 24px 20px 28px;
-    }
-    h1 {
-      margin: 0 0 16px;
-      font-size: 26px;
-      justify-self: center;
-      color: #000; /* keep the text black */
-      text-shadow: 0 0 4px rgba(86, 194, 87, 0.45);
-    }
+  /* ---------- Page layout + tabs ---------- */
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 24px;
+  }
+  .page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    padding: 24px 20px 28px;
+  }
+  h1 {
+    margin: 0 0 16px;
+    font-size: 26px;
+    justify-self: center;
+    color: #000; /* keep the text black */
+    text-shadow: 0 0 4px rgba(86, 194, 87, 0.45);
+  }
 
-    .tabs {
-      /* make the tab bar span the full content width */
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      width: 100%;
-      margin-bottom: 16px;
-    
-      /* visual style */
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #56c257;
-      background: #ffffff; /* the “gutter” between tabs */
-    }
-   .tab-button {
-      border: none;
-      background: #ffffff;
-      padding: 12px 0;
-      font-size: 15px;
-      cursor: pointer;
-      color: #045c3d;
-      font-weight: 600;
-      transition: background 0.15s ease, color 0.15s ease;
-      /* remove pill shape – grid + parent border-radius handles it */
-      border-radius: 0;
-    }
-    
-    .tab-button.active {
-      background: #56c257;
-      color: #ffffff;
-    }
-    .tab-button.active {
-      background: #56c257;
-      color: #ffffff;
-      opacity: 1;
-    }
-    .tab-panel {
-      display: none;
-      margin-top: 4px;
-    }
-    .tab-panel.active {
-      display: block;
-    }
+  .tabs {
+    /* make the tab bar span the full content width */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin-bottom: 16px;
 
-    /* ---------- Your table styles, generalized to .dw-root ---------- */
+    /* visual style */
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #56c257;
+    background: #ffffff; /* the “gutter” between tabs */
+  }
 
-    .dw-root,
-    .dw-root * { box-sizing: border-box; }
+  .tab-button {
+    border: none;
+    background: #ffffff;
+    padding: 12px 0;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease;
+    /* layout for icon + label */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* Action Network green for inactive state */
+    color: #2E8538;
+    border-radius: 0;
+  }
 
-    .dw-root {
-      --brand-50:#F6FFF9;
-      --brand-100:#DCF2EB;
-      --brand-500:#56C257;
-      --brand-600:#3FA94B;
-      --brand-700:#2E8538;
-      --brand-900:#1F5D28;
-      --bg:#ffffff;
-      --text:#1f2937;
-      box-sizing:border-box;
-      overflow-x:hidden;
-      display:block;
-      max-width:100%;
-      padding-left:var(--gutter-left,var(--gutter, clamp(8px, 4vw, 14px)));
-      padding-right:var(--gutter-right,var(--gutter, clamp(8px, 4vw, 14px)));
-    }
+  /* Font Awesome icons in tabs */
+  .tab-icon {
+    font-size: 18px;
+    color: currentColor; /* inherit from tab-button (green/white) */
+  }
 
+  .tab-button.active {
+    background: #56c257;
+    color: #ffffff; /* icons + text turn white */
+    opacity: 1;
+  }
+
+  .tab-panel {
+    display: none;
+    margin-top: 4px;
+  }
+  .tab-panel.active {
+    display: block;
+  }
+
+  /* ---------- Table styles, generalized to .dw-root ---------- */
+
+  .dw-root,
+  .dw-root * { box-sizing: border-box; }
+
+  .dw-root {
+    --brand-50:#F6FFF9;
+    --brand-100:#DCF2EB;
+    --brand-500:#56C257;
+    --brand-600:#3FA94B;
+    --brand-700:#2E8538;
+    --brand-900:#1F5D28;
+    --bg:#ffffff;
+    --text:#1f2937;
+    box-sizing:border-box;
+    overflow-x:hidden;
+    display:block;
+    max-width:100%;
+    padding-left:var(--gutter-left,var(--gutter, clamp(8px, 4vw, 14px)));
+    padding-right:var(--gutter-right,var(--gutter, clamp(8px, 4vw, 14px)));
+  }
+
+  .dw-root .dw-controls{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:12px;
+    margin:2px 0 10px 0;
+  }
+  .dw-root .left{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-start}
+  .dw-root .center{justify-self:center; display:flex; align-items:center}
+  .dw-root .right{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+
+  .dw-root .dw-field{position:relative}
+  .dw-root .dw-input,
+  .dw-root .dw-select,
+  .dw-root .dw-btn{
+    font:14px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    border-radius:10px;
+    padding:8px 10px;
+    transition:.15s ease;
+  }
+  .dw-root .dw-input,
+  .dw-root .dw-select{
+    background:#fff;
+    border:1px solid var(--brand-700);
+    color:var(--text);
+    box-shadow:inset 0 1px 2px rgba(16,24,40,.04);
+  }
+  .dw-root .dw-input{width:min(320px,100%); padding-right:36px}
+  .dw-root .dw-input::placeholder{color:#9AA4B2}
+  .dw-root .dw-input:focus,
+  .dw-root .dw-select:focus{
+    outline:none;
+    border-color:var(--brand-500);
+    box-shadow:0 0 0 3px color-mix(in oklab,var(--brand-500) 25%,transparent);
+    background:#fff;
+  }
+  .dw-root .dw-select{
+    appearance:none;
+    padding-right:34px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232E8538' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 10px center;
+    background-size:14px;
+  }
+  .dw-root .dw-btn{
+    background:var(--brand-500);
+    color:#fff;
+    border:1px solid var(--brand-500);
+    padding-inline:12px;
+    cursor:pointer;
+  }
+  .dw-root .dw-btn:hover{background:var(--brand-600); border-color:var(--brand-600)}
+  .dw-root .dw-btn:active{transform:translateY(1px)}
+  .dw-root .dw-btn[disabled]{
+    background:#fafafa;
+    border-color:#d1d5db;
+    color:#6b7280;
+    opacity:1;
+    cursor:not-allowed;
+    transform:none;
+  }
+  .dw-root .dw-status{font:12px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:#6b7280}
+  .dw-root .dw-counter{display:none !important;}
+
+  .dw-root .dw-clear{
+    position:absolute;
+    right:10px;
+    top:50%;
+    translate:0 -50%;
+    width:22px;
+    height:22px;
+    border-radius:9999px;
+    border:0;
+    background:transparent;
+    color:var(--brand-700);
+    cursor:pointer;
+    display:none;
+    align-items:center;
+    justify-content:center;
+  }
+  .dw-root .dw-field.has-value .dw-clear{display:flex}
+  .dw-root .dw-clear:hover{background:var(--brand-100)}
+
+  .dw-root .dw-top-brand{
+    display:flex;
+    align-items:center;
+  }
+  .dw-root .dw-top-logo{
+    display:block;
+    height: clamp(18px, 4.2vw, 28px);
+    width: clamp(120px, 16vw, 220px);
+    background: var(--header-bg, #56C257);
+    -webkit-mask: var(--logo-url) no-repeat center / contain;
+            mask: var(--logo-url) no-repeat center / contain;
+  }
+  .dw-root .dw-top-logo-img{
+    display:block;
+    height: clamp(18px, 4.2vw, 28px);
+    width:auto;
+    filter:
+      brightness(0) saturate(100%)
+      invert(62%) sepia(23%) saturate(1250%) hue-rotate(78deg)
+      brightness(96%) contrast(92%);
+    image-rendering:-webkit-optimize-contrast;
+  }
+  .dw-root .dw-top-logo { display: none; }
+  .dw-root .dw-top-logo-img { display: block; }
+  .dw-root.logo-mask-ok .dw-top-logo { display: block; }
+  .dw-root.logo-mask-ok .dw-top-logo-img { display: none; }
+
+  @supports not (-webkit-mask: url("")){
+    .dw-root .dw-top-logo{ display:none; }
+    .dw-root .dw-top-logo-img{ display:block; }
+  }
+
+  .dw-root .dw-card {
+    background: var(--bg);
+    border: 0;
+    box-shadow: none;
+    overflow: hidden;
+    margin: 0;
+    width: 100%;
+  }
+  .dw-root .dw-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dw-root .dw-scroll.no-scroll { overflow-x: hidden !important; }
+  .dw-root table.dw-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    background: transparent;
+    min-width: 1200px;
+    table-layout: auto;
+  }
+
+  .dw-root thead th{
+    background:var(--header-bg,#56C257);
+    color:var(--header-fg,#fff);
+    font-weight:700;
+    text-align:center;
+    padding:12px 14px;
+    white-space:nowrap;
+    vertical-align:middle;
+    border:0;
+    transition:background-color .15s, color .15s, box-shadow .15s, transform .05s;
+    position:sticky;
+    top:var(--sticky-top,0);
+    z-index:5;
+  }
+  .dw-root thead th.sortable{cursor:pointer; user-select:none}
+  .dw-root thead th.sortable::after{content:"↕"; font-size:12px; opacity:.75; margin-left:8px; color:var(--header-fg,#fff)}
+  .dw-root thead th.sortable[data-sort="asc"]::after{content:"▲"}
+  .dw-root thead th.sortable[data-sort="desc"]::after{content:"▼"}
+  .dw-root thead th.sortable:hover,
+  .dw-root thead th.sortable:focus-visible{
+    background:var(--brand-600);
+    color:#fff;
+    box-shadow:inset 0 -3px 0 var(--brand-100);
+  }
+  .dw-root .dw-scroll.scrolled thead th{
+    box-shadow:0 6px 10px -6px rgba(0,0,0,.25);
+  }
+  .dw-root thead th.is-sorted{
+    background:var(--brand-700);
+    color:#fff;
+    box-shadow:inset 0 -3px 0 var(--brand-100);
+  }
+
+  .dw-root thead th,
+  .dw-root tbody td {
+    padding: 12px 10px;
+    overflow: hidden;
+  }
+  .dw-root thead th { white-space: nowrap; }
+  .dw-root tbody td:nth-child(2) {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    min-width: 100px;
+    max-width: 220px;
+    line-height: 1.3;
+  }
+  .dw-root tbody td {
+    background-clip: padding-box;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+
+  .dw-root tbody td{
+    text-align:center;
+    vertical-align:middle;
+    background:transparent!important;
+    border:0;
+    transition:background-color .12s;
+  }
+  .dw-root thead th:last-child,
+  .dw-root tbody td:last-child{padding-right:14px}
+
+  /* odd rows white, even rows green */
+  .dw-root tbody tr:nth-child(odd){
+    background:#ffffff;
+  }
+  .dw-root tbody tr:nth-child(even){
+    background:var(--stripe,#DCF2EB);
+  }
+
+  .dw-root tbody tr:hover{
+    background:var(--hover,#BCE5D6);
+    box-shadow:inset 3px 0 0 var(--brand-500);
+  }
+
+  .dw-root .dw-scroll{
+    max-height:var(--table-max-h,500px);
+    overflow-y:auto;
+    -ms-overflow-style:auto;
+    scrollbar-width:thin;
+    scrollbar-color:var(--scroll-thumb,#56C257) transparent;
+  }
+
+  /* Horizontal scrollbar – thinner */
+  .dw-root .dw-scroll::-webkit-scrollbar:horizontal {
+    height: 3px;
+  }
+
+  /* Vertical scrollbar – thinner */
+  .dw-root .dw-scroll::-webkit-scrollbar:vertical {
+    width: 3px;
+  }
+
+  .dw-root .dw-scroll:hover::-webkit-scrollbar:vertical {
+    width: 4px;
+  }
+
+  /* Thumb – slim green bar */
+  .dw-root .dw-scroll::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb, #56C257);
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+  }
+
+  .dw-root tbody td.is-sorted{
+    background:var(--hover,#BCE5D6)!important;
+    font-weight:600;
+  }
+
+  .dw-root tr.dw-empty td{
+    text-align:center;
+    color:#6b7280;
+    font-style:italic;
+    padding:18px 14px;
+    background:linear-gradient(0deg,#fff,var(--brand-50));
+  }
+
+  .dw-root .dw-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 0;
+    margin-top:10px;
+    color:#6b7280;
+    font:12px/1.25 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    box-shadow:0 -1px 0 0 color-mix(in oklab,var(--brand-500) 35%, transparent);
+  }
+  .dw-root .dw-brand-left{
+    display:none;
+    color:inherit;
+    text-decoration:none;
+    font-weight:600;
+    border-bottom:1px dashed transparent;
+    transition:color .15s, border-color .15s;
+  }
+  .dw-root .dw-brand-left:is(:hover,:focus-visible){
+    color:var(--brand-700);
+    border-color:var(--brand-700);
+    outline:none;
+  }
+
+  .dw-root .dw-controls{
+    grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+    column-gap: 12px;
+  }
+  .dw-root .left,
+  .dw-root .center,
+  .dw-root .right { min-width: 0; }
+  .dw-root .left,
+  .dw-root .right { flex-wrap: nowrap; }
+  .dw-root .right { white-space: nowrap; gap: 8px; }
+  .dw-root .dw-input { width: clamp(160px, 26vw, 320px); }
+  .dw-root .dw-select { min-width: 68px; }
+  .dw-root .dw-btn { padding-inline: 8px; }
+
+  @media (max-width: 600px){
+    .page-container { padding: 16px 12px 20px; }
+    h1 { font-size: 20px; }
+
+    /* Use grid: logo full row, then search (left) + pager (right) on same row */
     .dw-root .dw-controls{
       display:grid;
-      grid-template-columns:1fr auto 1fr;
+      grid-template-columns: minmax(0,1fr) auto;
+      grid-template-areas:
+        "center center"
+        "left   right";
       align-items:center;
-      gap:12px;
-      margin:2px 0 10px 0;
+      gap:8px;
+      margin:6px 0 8px;
     }
-    .dw-root .left{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-start}
-    .dw-root .center{justify-self:center; display:flex; align-items:center}
-    .dw-root .right{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
 
-    .dw-root .dw-field{position:relative}
-    .dw-root .dw-input,
-    .dw-root .dw-select,
-    .dw-root .dw-btn{
-      font:14px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-      border-radius:10px;
-      padding:8px 10px;
-      transition:.15s ease;
+    .dw-root .left{
+      grid-area:left;
+      display:flex;
+      align-items:center;
+      min-width:0;
     }
-    .dw-root .dw-input,
-    .dw-root .dw-select{
-      background:#fff;
-      border:1px solid var(--brand-700);
-      color:var(--text);
-      box-shadow:inset 0 1px 2px rgba(16,24,40,.04);
-    }
-    .dw-root .dw-input{width:min(320px,100%); padding-right:36px}
-    .dw-root .dw-input::placeholder{color:#9AA4B2}
-    .dw-root .dw-input:focus,
-    .dw-root .dw-select:focus{
-      outline:none;
-      border-color:var(--brand-500);
-      box-shadow:0 0 0 3px color-mix(in oklab,var(--brand-500) 25%,transparent);
-      background:#fff;
-    }
-    .dw-root .dw-select{
-      appearance:none;
-      padding-right:34px;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232E8538' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;
-      background-position:right 10px center;
-      background-size:14px;
-    }
-    .dw-root .dw-btn{
-      background:var(--brand-500);
-      color:#fff;
-      border:1px solid var(--brand-500);
-      padding-inline:12px;
-      cursor:pointer;
-    }
-    .dw-root .dw-btn:hover{background:var(--brand-600); border-color:var(--brand-600)}
-    .dw-root .dw-btn:active{transform:translateY(1px)}
-    .dw-root .dw-btn[disabled]{
-      background:#fafafa;
-      border-color:#d1d5db;
-      color:#6b7280;
-      opacity:1;
-      cursor:not-allowed;
-      transform:none;
-    }
-    .dw-root .dw-status{font:12px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:#6b7280}
-    .dw-root .dw-counter{display:none !important;}
 
-    .dw-root .dw-clear{
-      position:absolute;
-      right:10px;
-      top:50%;
-      translate:0 -50%;
-      width:22px;
-      height:22px;
-      border-radius:9999px;
-      border:0;
-      background:transparent;
-      color:var(--brand-700);
-      cursor:pointer;
-      display:none;
+    .dw-root .center{
+      grid-area:center;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .dw-root .right{
+      grid-area:right;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:6px;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    /* Search should fill its cell */
+    .dw-root .dw-field{
+      width:100%;
+      max-width:none;
+    }
+
+    .dw-root .dw-input{
+      width:100%;
+      padding:6px 24px 6px 10px;
+      height:34px;
+      font-size:13px;
+    }
+
+    .dw-root .dw-clear{ width:20px; height:20px; }
+    .dw-root thead th{ font-size:13px; line-height:1.2; }
+
+    .dw-root .dw-top-logo,
+    .dw-root .dw-top-logo-img{
+      height:18px;
+      width:120px;
+    }
+
+    /* hide “Rows/page” label to save space */
+    .dw-root .right .dw-status{ display:none; }
+
+    .dw-root .dw-select{
+      min-width:68px;
+      height:32px;
+      padding:6px 22px 6px 8px;
+      font-size:13px;
+    }
+
+    .dw-root .dw-btn{
+      width:32px;
+      height:32px;
+      padding:0;
+      border-radius:12px;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
     }
-    .dw-root .dw-field.has-value .dw-clear{display:flex}
-    .dw-root .dw-clear:hover{background:var(--brand-100)}
+  }
 
-    .dw-root .dw-top-brand{
-      display:flex;
-      align-items:center;
-      
-    }
-    .dw-root .dw-top-logo{
-      display:block;
-      height: clamp(18px, 4.2vw, 28px);
-      width: clamp(120px, 16vw, 220px);
-      background: var(--header-bg, #56C257);
-      -webkit-mask: var(--logo-url) no-repeat center / contain;
-              mask: var(--logo-url) no-repeat center / contain;
-    }
-    .dw-root .dw-top-logo-img{
-      display:block;
-      height: clamp(18px, 4.2vw, 28px);
-      width:auto;
-      filter:
-        brightness(0) saturate(100%)
-        invert(62%) sepia(23%) saturate(1250%) hue-rotate(78deg)
-        brightness(96%) contrast(92%);
-      image-rendering:-webkit-optimize-contrast;
-    }
-    .dw-root .dw-top-logo { display: none; }
-    .dw-root .dw-top-logo-img { display: block; }
-    .dw-root.logo-mask-ok .dw-top-logo { display: block; }
-    .dw-root.logo-mask-ok .dw-top-logo-img { display: none; }
-
-    @supports not (-webkit-mask: url("")){
-      .dw-root .dw-top-logo{ display:none; }
-      .dw-root .dw-top-logo-img{ display:block; }
-    }
-
-    .dw-root .dw-card {
-      background: var(--bg);
-      border: 0;
-      box-shadow: none;
-      overflow: hidden;
-      margin: 0;
-      width: 100%;
-    }
-    .dw-root .dw-scroll {
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    .dw-root .dw-scroll.no-scroll { overflow-x: hidden !important; }
-    .dw-root table.dw-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      color: var(--text);
-      font-variant-numeric: tabular-nums;
-      background: transparent;
-      min-width: 1200px;
-      table-layout: auto;
-    }
-
-    .dw-root thead th{
-      background:var(--header-bg,#56C257);
-      color:var(--header-fg,#fff);
-      font-weight:700;
-      text-align:center;
-      padding:12px 14px;
-      white-space:nowrap;
-      vertical-align:middle;
-      border:0;
-      transition:background-color .15s, color .15s, box-shadow .15s, transform .05s;
-      position:sticky;
-      top:var(--sticky-top,0);
-      z-index:5;
-    }
-    .dw-root thead th.sortable{cursor:pointer; user-select:none}
-    .dw-root thead th.sortable::after{content:"↕"; font-size:12px; opacity:.75; margin-left:8px; color:var(--header-fg,#fff)}
-    .dw-root thead th.sortable[data-sort="asc"]::after{content:"▲"}
-    .dw-root thead th.sortable[data-sort="desc"]::after{content:"▼"}
-    .dw-root thead th.sortable:hover,
-    .dw-root thead th.sortable:focus-visible{
-      background:var(--brand-600);
-      color:#fff;
-      box-shadow:inset 0 -3px 0 var(--brand-100);
-    }
-    .dw-root .dw-scroll.scrolled thead th{
-      box-shadow:0 6px 10px -6px rgba(0,0,0,.25);
-    }
-    .dw-root thead th.is-sorted{
-      background:var(--brand-700);
-      color:#fff;
-      box-shadow:inset 0 -3px 0 var(--brand-100);
-    }
-
-    .dw-root thead th,
-    .dw-root tbody td {
-      padding: 12px 10px;
-      overflow: hidden;
-    }
-    .dw-root thead th { white-space: nowrap; }
-    .dw-root tbody td:nth-child(2) {
-      white-space: normal;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-      min-width: 100px;
-      max-width: 220px;
-      line-height: 1.3;
-    }
-    .dw-root tbody td {
-      background-clip: padding-box;
-      backface-visibility: hidden;
-      transform: translateZ(0);
-    }
-
-    .dw-root tbody td{
-      text-align:center;
-      vertical-align:middle;
-      background:transparent!important;
-      border:0;
-      transition:background-color .12s;
-    }
-    .dw-root thead th:last-child,
-    .dw-root tbody td:last-child{padding-right:14px}
-
-    /* odd rows white, even rows green */
-    .dw-root tbody tr:nth-child(odd){
-      background:#ffffff;
-    }
-    .dw-root tbody tr:nth-child(even){
-      background:var(--stripe,#DCF2EB);
-    }
-
-    .dw-root tbody tr:hover{
-      background:var(--hover,#BCE5D6);
-      box-shadow:inset 3px 0 0 var(--brand-500);
-    }
-
-    .dw-root .dw-scroll{
-      max-height:var(--table-max-h,500px);
-      overflow-y:auto;
-      -ms-overflow-style:auto;
-      scrollbar-width:thin;
-      scrollbar-color:var(--scroll-thumb,#56C257) transparent;
-    }
-
-    /* Horizontal scrollbar – thinner */
-    .dw-root .dw-scroll::-webkit-scrollbar:horizontal {
-      height: 3px;
-    }
-
-    /* Vertical scrollbar – thinner */
-    .dw-root .dw-scroll::-webkit-scrollbar:vertical {
-      width: 3px;
-    }
-
-    .dw-root .dw-scroll:hover::-webkit-scrollbar:vertical {
-      width: 4px;
-    }
-
-    /* Thumb – slim green bar */
-    .dw-root .dw-scroll::-webkit-scrollbar-thumb {
-      background: var(--scroll-thumb, #56C257);
-      border-radius: 9999px;
-      border: 1px solid transparent;
-      background-clip: content-box;
-    }
-
-    .dw-root tbody td.is-sorted{
-      background:var(--hover,#BCE5D6)!important;
-      font-weight:600;
-    }
-
-    .dw-root tr.dw-empty td{
-      text-align:center;
-      color:#6b7280;
-      font-style:italic;
-      padding:18px 14px;
-      background:linear-gradient(0deg,#fff,var(--brand-50));
-    }
-
-    .dw-root .dw-footer{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      margin-top:10px;
-      color:#6b7280;
-      font:12px/1.25 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-      box-shadow:0 -1px 0 0 color-mix(in oklab,var(--brand-500) 35%, transparent);
-    }
-    .dw-root .dw-brand-left{
-      display:none;
-      color:inherit;
-      text-decoration:none;
-      font-weight:600;
-      border-bottom:1px dashed transparent;
-      transition:color .15s, border-color .15s;
-    }
-    .dw-root .dw-brand-left:is(:hover,:focus-visible){
-      color:var(--brand-700);
-      border-color:var(--brand-700);
-      outline:none;
-    }
-
-    .dw-root .dw-controls{
-      grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
-      column-gap: 12px;
-    }
-    .dw-root .left,
-    .dw-root .center,
-    .dw-root .right { min-width: 0; }
-    .dw-root .left,
-    .dw-root .right { flex-wrap: nowrap; }
-    .dw-root .right { white-space: nowrap; gap: 8px; }
-    .dw-root .dw-input { width: clamp(160px, 26vw, 320px); }
-    .dw-root .dw-select { min-width: 68px; }
-    .dw-root .dw-btn { padding-inline: 8px; }
-
-    @media (max-width: 600px){
-      .page-container { padding: 16px 12px 20px; }
-      h1 { font-size: 20px; }
-
-      /* Use grid: logo full row, then search (left) + pager (right) on same row */
-      .dw-root .dw-controls{
-        display:grid;
-        grid-template-columns: minmax(0,1fr) auto;
-        grid-template-areas:
-          "center center"
-          "left   right";
-        align-items:center;
-        gap:8px;
-        margin:6px 0 8px;
-      }
-
-      .dw-root .left{
-        grid-area:left;
-        display:flex;
-        align-items:center;
-        min-width:0;
-      }
-
-      .dw-root .center{
-        grid-area:center;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-      }
-
-      .dw-root .right{
-        grid-area:right;
-        display:flex;
-        align-items:center;
-        justify-content:flex-end;
-        gap:6px;
-        white-space:nowrap;
-        min-width:0;
-      }
-
-      /* Search should fill its cell */
-      .dw-root .dw-field{
-        width:100%;
-        max-width:none;
-      }
-
-      .dw-root .dw-input{
-        width:100%;
-        padding:6px 24px 6px 10px;
-        height:34px;
-        font-size:13px;
-      }
-
-      .dw-root .dw-clear{ width:20px; height:20px; }
-      .dw-root thead th{ font-size:13px; line-height:1.2; }
-
-      .dw-root .dw-top-logo,
-      .dw-root .dw-top-logo-img{
-        height:18px;
-        width:120px;
-      }
-
-      /* hide “Rows/page” label to save space */
-      .dw-root .right .dw-status{ display:none; }
-
-      .dw-root .dw-select{
-        min-width:68px;
-        height:32px;
-        padding:6px 22px 6px 8px;
-        font-size:13px;
-      }
-
-      .dw-root .dw-btn{
-        width:32px;
-        height:32px;
-        padding:0;
-        border-radius:12px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-      }
-    }
-
-    /* Logo size override (applies to both tables) */
-    .dw-root .dw-top-logo{ height: 64px; width: 260px; }
-    .dw-root .dw-top-logo-img{ height: 64px; width: auto; }
-    @media (max-width: 600px){
-      .dw-root .dw-top-logo{ height: 44px; width: 160px; }
-      .dw-root .dw-top-logo-img{ height: 44px; }
-    }
+  /* Logo size override (applies to both tables) */
+  .dw-root .dw-top-logo{ height: 64px; width: 260px; }
+  .dw-root .dw-top-logo-img{ height: 64px; width: auto; }
+  @media (max-width: 600px){
+    .dw-root .dw-top-logo{ height: 44px; width: 160px; }
+    .dw-root .dw-top-logo-img{ height: 44px; }
+  }
 </style>
+
 </head>
 <body>
   <div class="page-container">
     <h1>Quarterback Injury Index – Teams &amp; Players</h1>
 
     <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-button active" data-tab="players-panel">Players</button>
-      <button class="tab-button" data-tab="teams-panel">Teams</button>
-    </div>
+<div class="tabs">
+  <button class="tab-button active" data-tab="players-panel">
+    <i class="fa-solid fa-user tab-icon"></i>
+    Players
+  </button>
+  <button class="tab-button" data-tab="teams-panel">
+    <i class="fa-solid fa-football tab-icon"></i>
+    Teams
+  </button>
+</div>
 
     <!-- ===== Players TAB ===== -->
     <div id="players-panel" class="tab-panel active">
