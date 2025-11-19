@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quarterback Injury Index – Teams & Players</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ---------- Page layout + tabs ---------- */
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 24px;
+    }
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      padding: 24px 20px 28px;
+    }
+    h1 {
+      margin: 0 0 16px;
+      font-size: 24px;
+    }
+    .tabs {
+      /* make the tab bar span the full content width */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      margin-bottom: 16px;
+    
+      /* visual style */
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #56c257;
+      background: #ffffff; /* the “gutter” between tabs */
+    }
+   .tab-button {
+      border: none;
+      background: #ffffff;
+      padding: 12px 0;
+      font-size: 15px;
+      cursor: pointer;
+      color: #045c3d;
+      font-weight: 600;
+      transition: background 0.15s ease, color 0.15s ease;
+      /* remove pill shape – grid + parent border-radius handles it */
+      border-radius: 0;
+    }
+    
+    .tab-button.active {
+      background: #56c257;
+      color: #ffffff;
+    }
+    .tab-button.active {
+      background: #56c257;
+      color: #ffffff;
+      opacity: 1;
+    }
+    .tab-panel {
+      display: none;
+      margin-top: 4px;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ---------- Your table styles, generalized to .dw-root ---------- */
+
+    .dw-root,
+    .dw-root * { box-sizing: border-box; }
+
+    .dw-root {
+      --brand-50:#F6FFF9;
+      --brand-100:#DCF2EB;
+      --brand-500:#56C257;
+      --brand-600:#3FA94B;
+      --brand-700:#2E8538;
+      --brand-900:#1F5D28;
+      --bg:#ffffff;
+      --text:#1f2937;
+      box-sizing:border-box;
+      overflow-x:hidden;
+      display:block;
+      max-width:100%;
+      padding-left:var(--gutter-left,var(--gutter, clamp(8px, 4vw, 14px)));
+      padding-right:var(--gutter-right,var(--gutter, clamp(8px, 4vw, 14px)));
+    }
+
+    .dw-root .dw-controls{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      align-items:center;
+      gap:12px;
+      margin:2px 0 10px 0;
+    }
+    .dw-root .left{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-start}
+    .dw-root .center{justify-self:center; display:flex; align-items:center}
+    .dw-root .right{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+
+    .dw-root .dw-field{position:relative}
+    .dw-root .dw-input,
+    .dw-root .dw-select,
+    .dw-root .dw-btn{
+      font:14px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      border-radius:10px;
+      padding:8px 10px;
+      transition:.15s ease;
+    }
+    .dw-root .dw-input,
+    .dw-root .dw-select{
+      background:#fff;
+      border:1px solid var(--brand-700);
+      color:var(--text);
+      box-shadow:inset 0 1px 2px rgba(16,24,40,.04);
+    }
+    .dw-root .dw-input{width:min(320px,100%); padding-right:36px}
+    .dw-root .dw-input::placeholder{color:#9AA4B2}
+    .dw-root .dw-input:focus,
+    .dw-root .dw-select:focus{
+      outline:none;
+      border-color:var(--brand-500);
+      box-shadow:0 0 0 3px color-mix(in oklab,var(--brand-500) 25%,transparent);
+      background:#fff;
+    }
+    .dw-root .dw-select{
+      appearance:none;
+      padding-right:34px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232E8538' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 10px center;
+      background-size:14px;
+    }
+    .dw-root .dw-btn{
+      background:var(--brand-500);
+      color:#fff;
+      border:1px solid var(--brand-500);
+      padding-inline:12px;
+      cursor:pointer;
+    }
+    .dw-root .dw-btn:hover{background:var(--brand-600); border-color:var(--brand-600)}
+    .dw-root .dw-btn:active{transform:translateY(1px)}
+    .dw-root .dw-btn[disabled]{
+      background:#fafafa;
+      border-color:#d1d5db;
+      color:#6b7280;
+      opacity:1;
+      cursor:not-allowed;
+      transform:none;
+    }
+    .dw-root .dw-status{font:12px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:#6b7280}
+    .dw-root .dw-counter{display:none !important;}
+
+    .dw-root .dw-clear{
+      position:absolute;
+      right:10px;
+      top:50%;
+      translate:0 -50%;
+      width:22px;
+      height:22px;
+      border-radius:9999px;
+      border:0;
+      background:transparent;
+      color:var(--brand-700);
+      cursor:pointer;
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .dw-root .dw-field.has-value .dw-clear{display:flex}
+    .dw-root .dw-clear:hover{background:var(--brand-100)}
+
+    .dw-root .dw-top-brand{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .dw-root .dw-top-logo{
+      display:block;
+      height: clamp(18px, 4.2vw, 28px);
+      width: clamp(120px, 16vw, 220px);
+      background: var(--header-bg, #56C257);
+      -webkit-mask: var(--logo-url) no-repeat center / contain;
+              mask: var(--logo-url) no-repeat center / contain;
+    }
+    .dw-root .dw-top-logo-img{
+      display:block;
+      height: clamp(18px, 4.2vw, 28px);
+      width:auto;
+      filter:
+        brightness(0) saturate(100%)
+        invert(62%) sepia(23%) saturate(1250%) hue-rotate(78deg)
+        brightness(96%) contrast(92%);
+      image-rendering:-webkit-optimize-contrast;
+    }
+    .dw-root .dw-top-logo { display: none; }
+    .dw-root .dw-top-logo-img { display: block; }
+    .dw-root.logo-mask-ok .dw-top-logo { display: block; }
+    .dw-root.logo-mask-ok .dw-top-logo-img { display: none; }
+
+    @supports not (-webkit-mask: url("")){
+      .dw-root .dw-top-logo{ display:none; }
+      .dw-root .dw-top-logo-img{ display:block; }
+    }
+
+    .dw-root .dw-card {
+      background: var(--bg);
+      border: 0;
+      box-shadow: none;
+      overflow: hidden;
+      margin: 0;
+      width: 100%;
+    }
+    .dw-root .dw-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dw-root .dw-scroll.no-scroll { overflow-x: hidden !important; }
+    .dw-root table.dw-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      background: transparent;
+      min-width: 1200px;
+      table-layout: auto;
+    }
+
+    .dw-root thead th{
+      background:var(--header-bg,#56C257);
+      color:var(--header-fg,#fff);
+      font-weight:700;
+      text-align:center;
+      padding:12px 14px;
+      white-space:nowrap;
+      vertical-align:middle;
+      border:0;
+      transition:background-color .15s, color .15s, box-shadow .15s, transform .05s;
+      position:sticky;
+      top:var(--sticky-top,0);
+      z-index:5;
+    }
+    .dw-root thead th.sortable{cursor:pointer; user-select:none}
+    .dw-root thead th.sortable::after{content:"↕"; font-size:12px; opacity:.75; margin-left:8px; color:var(--header-fg,#fff)}
+    .dw-root thead th.sortable[data-sort="asc"]::after{content:"▲"}
+    .dw-root thead th.sortable[data-sort="desc"]::after{content:"▼"}
+    .dw-root thead th.sortable:hover,
+    .dw-root thead th.sortable:focus-visible{
+      background:var(--brand-600);
+      color:#fff;
+      box-shadow:inset 0 -3px 0 var(--brand-100);
+    }
+    .dw-root .dw-scroll.scrolled thead th{
+      box-shadow:0 6px 10px -6px rgba(0,0,0,.25);
+    }
+    .dw-root thead th.is-sorted{
+      background:var(--brand-700);
+      color:#fff;
+      box-shadow:inset 0 -3px 0 var(--brand-100);
+    }
+
+    .dw-root thead th,
+    .dw-root tbody td {
+      padding: 12px 10px;
+      overflow: hidden;
+    }
+    .dw-root thead th { white-space: nowrap; }
+    .dw-root tbody td:nth-child(2) {
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      min-width: 100px;
+      max-width: 220px;
+      line-height: 1.3;
+    }
+    .dw-root tbody td {
+      background-clip: padding-box;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    .dw-root tbody td{ text-align:center; vertical-align:middle; background:transparent!important; border:0; transition:background-color .12s }
+    .dw-root thead th:last-child,
+    .dw-root tbody td:last-child{padding-right:14px}
+    .dw-root tbody tr:nth-child(odd){background:var(--stripe,#DCF2EB)}
+    .dw-root tbody tr:hover{background:var(--hover,#BCE5D6); box-shadow:inset 3px 0 0 var(--brand-500)}
+
+    .dw-root .dw-scroll{
+      max-height:var(--table-max-h,500px);
+      overflow-y:auto;
+      -ms-overflow-style:auto;
+      scrollbar-width:thin;
+      scrollbar-color:var(--scroll-thumb,#56C257) transparent;
+    }
+    .dw-root .dw-scroll::-webkit-scrollbar:horizontal{height:0; display:none}
+    .dw-root .dw-scroll::-webkit-scrollbar:vertical{width:var(--vbar-w,6px)}
+    .dw-root .dw-scroll:hover::-webkit-scrollbar:vertical{width:var(--vbar-w-hover,8px)}
+    .dw-root .dw-scroll::-webkit-scrollbar-thumb{
+      background:var(--scroll-thumb,#56C257);
+      border-radius:9999px;
+      border:2px solid transparent;
+      background-clip:content-box;
+    }
+
+    .dw-root tbody tr{background:transparent!important}
+    .dw-root tbody tr.dw-zebra{background:var(--stripe,#DCF2EB)!important}
+    .dw-root tbody td.is-sorted{background:var(--hover,#BCE5D6)!important; font-weight:600}
+
+    .dw-root tr.dw-empty td{
+      text-align:center;
+      color:#6b7280;
+      font-style:italic;
+      padding:18px 14px;
+      background:linear-gradient(0deg,#fff,var(--brand-50));
+    }
+
+    .dw-root .dw-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      margin-top:10px;
+      color:#6b7280;
+      font:12px/1.25 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      box-shadow:0 -1px 0 0 color-mix(in oklab,var(--brand-500) 35%, transparent);
+    }
+    .dw-root .dw-brand-left{
+      display:none;
+      color:inherit;
+      text-decoration:none;
+      font-weight:600;
+      border-bottom:1px dashed transparent;
+      transition:color .15s, border-color .15s;
+    }
+    .dw-root .dw-brand-left:is(:hover,:focus-visible){
+      color:var(--brand-700);
+      border-color:var(--brand-700);
+      outline:none;
+    }
+
+    .dw-root .dw-controls{
+      grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+      column-gap: 12px;
+    }
+    .dw-root .left,
+    .dw-root .center,
+    .dw-root .right { min-width: 0; }
+    .dw-root .left,
+    .dw-root .right { flex-wrap: nowrap; }
+    .dw-root .right { white-space: nowrap; gap: 8px; }
+    .dw-root .dw-input { width: clamp(160px, 26vw, 320px); }
+    .dw-root .dw-select { min-width: 68px; }
+    .dw-root .dw-btn { padding-inline: 8px; }
+
+    @media (min-width:601px) and (max-width:980px){
+      .dw-root .right > .dw-status{display:inline; font-size:0;}
+      .dw-root .right > .dw-status::after{content:"Rows"; font-size:12px;}
+      .dw-root .dw-input { width: clamp(150px, 22vw, 260px); }
+    }
+    @media (max-width: 600px){
+      .page-container { padding: 16px 12px 20px; }
+      h1 { font-size: 20px; }
+      .dw-root .dw-controls{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) auto auto;
+        align-items:center;
+        column-gap:8px;
+        row-gap:0;
+        margin:6px 0 8px;
+      }
+      .dw-root .dw-field{width:100%; max-width:46vw;}
+      .dw-root .dw-input{width:100%; padding:6px 24px 6px 10px; height:34px; font-size:13px;}
+      .dw-root .dw-clear{width:20px; height:20px;}
+      .dw-root thead th{ font-size:13px; line-height:1.2; }
+      .dw-root .dw-top-logo,
+      .dw-root .dw-top-logo-img{ height:18px; width:120px; }
+      .dw-root .right{justify-content:flex-end; gap:6px;}
+      .dw-root .right .dw-status{display:none;}
+      .dw-root .dw-select{min-width:68px; height:32px; padding:6px 22px 6px 8px; font-size:13px;}
+      .dw-root .dw-btn{width:32px; height:32px; padding:0; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;}
+    }
+
+    /* Logo size override (applies to both tables) */
+    .dw-root .dw-top-logo{ height: 64px; width: 260px; }
+    .dw-root .dw-top-logo-img{ height: 64px; width: auto; }
+    @media (max-width: 600px){
+      .dw-root .dw-top-logo{ height: 44px; width: 160px; }
+      .dw-root .dw-top-logo-img{ height: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <h1>Quarterback Injury Index – Teams &amp; Players</h1>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-button active" data-tab="players-panel">Players</button>
+      <button class="tab-button" data-tab="teams-panel">Teams</button>
+    </div>
+
+    <!-- ===== Players TAB ===== -->
+    <div id="players-panel" class="tab-panel active">
+      <section>
+        <div class="dw-root" data-dw="table"
+             style="--logo-h:34px;
+                    --stripe:#DCF2EB;
+                    --hover:#BCE5D6;
+                    --header-bg:#56C257;
+                    --header-fg:#ffffff;
+                    --scroll-track:#f7f8fb;
+                    --scroll-thumb:#56C257;
+                    --scroll-thumb-hover:#3FA94B;
+                    --table-max-h:500px;
+                    --vbar-w:6px; --vbar-w-hover:8px;">
+          <!-- controls + table (YOUR ORIGINAL CONTENT) -->
+          <div class="dw-controls">
+            <div class="left">
+              <div class="dw-field">
+                <input type="search" class="dw-input" placeholder="Search table…" aria-label="Search table">
+                <button type="button" class="dw-clear" aria-label="Clear search">×</button>
+              </div>
+              <span class="dw-status dw-counter" aria-live="polite"></span>
+            </div>
+
+            <div class="center">
+              <div class="dw-top-brand" aria-label="Brand">
+                <div class="dw-top-logo" aria-hidden="true"></div>
+                <img class="dw-top-logo-img"
+                     src="https://i.postimg.cc/x1nG117r/AN-final2-logo.png"
+                     alt="Action Network logo" loading="lazy">
+              </div>
+            </div>
+
+            <div class="right">
+              <label class="dw-status" for="dw-size-players" style="margin-right:4px;">Rows/page</label>
+              <select id="dw-size-players" class="dw-select">
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="0">All</option>
+              </select>
+              <button class="dw-btn" data-page="prev" aria-label="Previous page">‹</button>
+              <button class="dw-btn" data-page="next" aria-label="Next page">›</button>
+            </div>
+          </div>
+
+          <div class="dw-card">
+            <div class="dw-scroll">
+              <!-- *** PLAYERS TABLE – THIS IS YOUR SAMPLE TABLE, EDIT ROWS AS NEEDED *** -->
+              <table class="dw-table">
+  <thead>
+    <tr>
+      <th scope="col" data-type="num">Rank</th>
+      <th scope="col" data-type="text">Player</th>
+      <th scope="col" data-type="text">Team</th>
+      <th scope="col" data-type="num">Risk Index (0–100)</th>
+      <th scope="col" data-type="num">Missed Matches</th>
+      <th scope="col" data-type="num">Unique Injuries</th>
+      <th scope="col" data-type="num">IR Stints</th>
+      <th scope="col" data-type="num">Sacked [%]</th>
+      <th scope="col" data-type="num">Allowed Pressure [%]</th>
+      <th scope="col" data-type="num">Sack Rate [%]</th>
+      <th scope="col" data-type="num">Team PBWR [%]</th>
+      <th scope="col" data-type="num">Rush Attempts</th>
+      <th scope="col" data-type="num">Scrambles / Passing</th>
+      <th scope="col" data-type="num">Hits / Passing</th>
+      <th scope="col" data-type="num">Historical Durability</th>
+      <th scope="col" data-type="num">OL Exposure</th>
+      <th scope="col" data-type="num">Mobility Exposure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Deshaun Watson</td><td>Cleveland Browns</td><td>62.49</td><td>9</td><td>3</td><td>2</td><td>10.94</td><td>24.47</td><td>0.45</td><td>56.00</td><td>31.00</td><td>17.33</td><td>22.33</td><td>80.56</td><td>63.16</td><td>32.64</td></tr>
+    <tr><td>2</td><td>Daniel Jones</td><td>Indianapolis Colts</td><td>58.32</td><td>6</td><td>2</td><td>2</td><td>8.82</td><td>24.62</td><td>0.36</td><td>58.00</td><td>65.80</td><td>26.20</td><td>36.00</td><td>61.11</td><td>56.94</td><td>55.78</td></tr>
+    <tr><td>3</td><td>Joe Burrow</td><td>Cincinnati Bengals</td><td>55.79</td><td>5</td><td>2</td><td>2</td><td>8.10</td><td>22.22</td><td>0.36</td><td>54.00</td><td>38.00</td><td>17.20</td><td>41.60</td><td>57.41</td><td>61.49</td><td>45.23</td></tr>
+    <tr><td>4</td><td>Justin Herbert</td><td>Los Angeles Chargers</td><td>55.04</td><td>4</td><td>2</td><td>1</td><td>6.30</td><td>22.00</td><td>0.29</td><td>53.00</td><td>57.80</td><td>28.20</td><td>58.60</td><td>42.59</td><td>59.95</td><td>68.06</td></tr>
+    <tr><td>5</td><td>Anthony Richardson</td><td>Indianapolis Colts</td><td>51.91</td><td>5</td><td>4</td><td>2</td><td>4.24</td><td>16.13</td><td>0.26</td><td>58.00</td><td>38.33</td><td>10.00</td><td>11.67</td><td>74.07</td><td>47.24</td><td>22.99</td></tr>
+    <tr><td>6</td><td>Kyler Murray</td><td>Arizona Cardinals</td><td>48.64</td><td>4</td><td>2</td><td>2</td><td>6.53</td><td>18.16</td><td>0.36</td><td>62.00</td><td>61.20</td><td>27.20</td><td>15.80</td><td>53.70</td><td>46.24</td><td>43.91</td></tr>
+    <tr><td>7</td><td>Marcus Mariota</td><td>Washington Commanders</td><td>48.55</td><td>4</td><td>3</td><td>3</td><td>6.80</td><td>16.82</td><td>0.40</td><td>65.00</td><td>29.40</td><td>7.80</td><td>9.40</td><td>73.15</td><td>42.39</td><td>17.81</td></tr>
+    <tr><td>8</td><td>Carson Wentz</td><td>Minnesota Vikings</td><td>47.20</td><td>3</td><td>2</td><td>2</td><td>9.93</td><td>24.74</td><td>0.40</td><td>58.00</td><td>22.00</td><td>10.40</td><td>25.00</td><td>50.00</td><td>58.63</td><td>26.72</td></tr>
+    <tr><td>9</td><td>Tyrod Taylor</td><td>New York Jets</td><td>46.06</td><td>2</td><td>2</td><td>2</td><td>11.08</td><td>24.30</td><td>0.46</td><td>54.00</td><td>15.80</td><td>12.20</td><td>8.60</td><td>46.30</td><td>66.41</td><td>17.19</td></tr>
+    <tr><td>10</td><td>Justin Fields</td><td>New York Jets</td><td>45.53</td><td>1</td><td>1</td><td>0</td><td>11.70</td><td>26.10</td><td>0.45</td><td>54.00</td><td>95.60</td><td>40.00</td><td>27.00</td><td>12.04</td><td>67.42</td><td>68.49</td></tr>
+    <tr><td>11</td><td>Tua Tagovailoa</td><td>Miami Dolphins</td><td>45.17</td><td>4</td><td>2</td><td>2</td><td>5.12</td><td>18.38</td><td>0.28</td><td>58.00</td><td>26.20</td><td>11.60</td><td>19.40</td><td>53.70</td><td>49.46</td><td>25.50</td></tr>
+    <tr><td>12</td><td>Russell Wilson</td><td>New York Giants</td><td>42.82</td><td>2</td><td>2</td><td>1</td><td>8.74</td><td>26.70</td><td>0.33</td><td>67.00</td><td>47.80</td><td>24.40</td><td>43.00</td><td>35.19</td><td>43.67</td><td>53.86</td></tr>
+    <tr><td>13</td><td>Trey Lance</td><td>Los Angeles Chargers</td><td>42.29</td><td>4</td><td>2</td><td>1</td><td>10.07</td><td>22.03</td><td>0.46</td><td>53.00</td><td>16.50</td><td>4.50</td><td>2.50</td><td>42.59</td><td>66.31</td><td>8.18</td></tr>
+    <tr><td>14</td><td>Sam Darnold</td><td>Seattle Seahawks</td><td>41.39</td><td>2</td><td>2</td><td>2</td><td>7.69</td><td>21.74</td><td>0.35</td><td>66.00</td><td>35.00</td><td>13.40</td><td>24.40</td><td>46.30</td><td>42.56</td><td>31.90</td></tr>
+    <tr><td>15</td><td>Aaron Rodgers</td><td>Pittsburgh Steelers</td><td>41.10</td><td>2</td><td>1</td><td>1</td><td>14.70</td><td>45.86</td><td>0.32</td><td>62.00</td><td>25.50</td><td>10.40</td><td>30.20</td><td>26.85</td><td>64.92</td><td>30.55</td></tr>
+    <tr><td>16</td><td>Aidan O&#39;Connell</td><td>Las Vegas Raiders</td><td>39.04</td><td>2</td><td>2</td><td>2</td><td>5.25</td><td>18.15</td><td>0.29</td><td>60.00</td><td>19.00</td><td>1.50</td><td>20.50</td><td>46.30</td><td>46.64</td><td>16.78</td></tr>
+    <tr><td>17</td><td>Will Levis</td><td>Tennessee Titans</td><td>38.97</td><td>2</td><td>1</td><td>1</td><td>10.94</td><td>26.50</td><td>0.41</td><td>64.00</td><td>35.00</td><td>14.00</td><td>40.00</td><td>26.85</td><td>51.25</td><td>41.19</td></tr>
+    <tr><td>18</td><td>Dak Prescott</td><td>Dallas Cowboys</td><td>38.75</td><td>5</td><td>1</td><td>1</td><td>5.40</td><td>20.18</td><td>0.27</td><td>67.00</td><td>38.00</td><td>17.20</td><td>37.40</td><td>37.96</td><td>36.73</td><td>42.85</td></tr>
+    <tr><td>19</td><td>Baker Mayfield</td><td>Tampa Bay Buccaneers</td><td>37.49</td><td>3</td><td>1</td><td>1</td><td>8.29</td><td>19.60</td><td>0.42</td><td>63.00</td><td>34.71</td><td>20.71</td><td>18.14</td><td>30.56</td><td>48.12</td><td>33.72</td></tr>
+    <tr><td>20</td><td>Skylar Thompson</td><td>Pittsburgh Steelers</td><td>37.19</td><td>2</td><td>2</td><td>1</td><td>10.40</td><td>37.75</td><td>0.28</td><td>62.00</td><td>7.50</td><td>3.00</td><td>15.50</td><td>35.19</td><td>57.35</td><td>12.16</td></tr>
+    <tr><td>21</td><td>Jalen Hurts</td><td>Philadelphia Eagles</td><td>36.29</td><td>0</td><td>0</td><td>0</td><td>7.70</td><td>20.68</td><td>0.37</td><td>62.00</td><td>134.80</td><td>41.00</td><td>23.60</td><td>0.00</td><td>48.54</td><td>77.22</td></tr>
+    <tr><td>22</td><td>Teddy Bridgewater</td><td>Tampa Bay Buccaneers</td><td>35.19</td><td>3</td><td>1</td><td>1</td><td>7.46</td><td>28.55</td><td>0.26</td><td>63.00</td><td>9.00</td><td>9.00</td><td>27.50</td><td>30.56</td><td>48.63</td><td>23.80</td></tr>
+    <tr><td>23</td><td>Trevor Lawrence</td><td>Jacksonville Jaguars</td><td>34.23</td><td>1</td><td>1</td><td>1</td><td>5.77</td><td>18.30</td><td>0.32</td><td>69.00</td><td>55.00</td><td>26.80</td><td>33.60</td><td>23.15</td><td>34.10</td><td>52.14</td></tr>
+    <tr><td>24</td><td>C.J. Stroud</td><td>Houston Texans</td><td>33.85</td><td>0</td><td>0</td><td>0</td><td>7.51</td><td>22.77</td><td>0.33</td><td>54.00</td><td>40.00</td><td>26.67</td><td>37.67</td><td>0.00</td><td>60.61</td><td>50.55</td></tr>
+    <tr><td>25</td><td>Kirk Cousins</td><td>Atlanta Falcons</td><td>33.47</td><td>2</td><td>1</td><td>1</td><td>5.00</td><td>23.32</td><td>0.21</td><td>66.00</td><td>19.80</td><td>6.80</td><td>48.80</td><td>26.85</td><td>38.54</td><td>36.97</td></tr>
+    <tr><td>26</td><td>Lamar Jackson</td><td>Baltimore Ravens</td><td>33.06</td><td>0</td><td>0</td><td>0</td><td>7.89</td><td>20.18</td><td>0.39</td><td>65.00</td><td>113.40</td><td>39.40</td><td>22.80</td><td>0.00</td><td>44.33</td><td>70.16</td></tr>
+    <tr><td>27</td><td>Tyler Huntley</td><td>Baltimore Ravens</td><td>32.57</td><td>2</td><td>1</td><td>1</td><td>9.69</td><td>19.20</td><td>0.50</td><td>65.00</td><td>28.40</td><td>13.20</td><td>7.20</td><td>26.85</td><td>47.84</td><td>20.33</td></tr>
+    <tr><td>28</td><td>Andy Dalton</td><td>Carolina Panthers</td><td>32.27</td><td>2</td><td>2</td><td>0</td><td>8.04</td><td>18.24</td><td>0.44</td><td>58.00</td><td>13.00</td><td>6.20</td><td>10.40</td><td>24.07</td><td>55.36</td><td>13.04</td></tr>
+    <tr><td>29</td><td>Bryce Young</td><td>Carolina Panthers</td><td>31.88</td><td>0</td><td>0</td><td>0</td><td>7.50</td><td>24.50</td><td>0.31</td><td>58.00</td><td>34.67</td><td>27.33</td><td>39.33</td><td>0.00</td><td>54.92</td><td>50.64</td></tr>
+    <tr><td>30</td><td>Jimmy Garoppolo</td><td>Los Angeles Rams</td><td>31.50</td><td>3</td><td>3</td><td>0</td><td>6.54</td><td>17.45</td><td>0.37</td><td>69.00</td><td>17.20</td><td>4.50</td><td>20.00</td><td>36.11</td><td>35.68</td><td>18.28</td></tr>
+    <tr><td>31</td><td>Brock Purdy</td><td>San Francisco 49ers</td><td>31.25</td><td>2</td><td>1</td><td>0</td><td>5.27</td><td>21.23</td><td>0.25</td><td>61.00</td><td>33.50</td><td>17.50</td><td>26.25</td><td>15.74</td><td>45.84</td><td>35.62</td></tr>
+    <tr><td>32</td><td>Patrick Mahomes</td><td>Kansas City Chiefs</td><td>30.34</td><td>0</td><td>0</td><td>0</td><td>4.64</td><td>21.44</td><td>0.22</td><td>71.00</td><td>61.40</td><td>42.60</td><td>58.80</td><td>0.00</td><td>29.68</td><td>79.80</td></tr>
+    <tr><td>33</td><td>Geno Smith</td><td>Las Vegas Raiders</td><td>29.81</td><td>0</td><td>0</td><td>0</td><td>8.49</td><td>23.12</td><td>0.37</td><td>60.00</td><td>39.40</td><td>18.60</td><td>38.40</td><td>0.00</td><td>53.16</td><td>44.81</td></tr>
+    <tr><td>34</td><td>Jared Goff</td><td>Detroit Lions</td><td>29.67</td><td>0</td><td>0</td><td>0</td><td>5.35</td><td>22.34</td><td>0.24</td><td>56.00</td><td>24.80</td><td>10.00</td><td>53.40</td><td>0.00</td><td>53.91</td><td>43.23</td></tr>
+    <tr><td>35</td><td>Matthew Stafford</td><td>Los Angeles Rams</td><td>29.57</td><td>1</td><td>1</td><td>1</td><td>5.68</td><td>19.92</td><td>0.28</td><td>69.00</td><td>24.00</td><td>6.40</td><td>41.20</td><td>23.15</td><td>34.14</td><td>33.43</td></tr>
+    <tr><td>36</td><td>Josh Allen</td><td>Buffalo Bills</td><td>28.66</td><td>0</td><td>0</td><td>0</td><td>4.65</td><td>19.30</td><td>0.24</td><td>75.00</td><td>103.60</td><td>44.80</td><td>41.80</td><td>0.00</td><td>22.96</td><td>82.47</td></tr>
+    <tr><td>37</td><td>Jameis Winston</td><td>New York Giants</td><td>28.59</td><td>2</td><td>1</td><td>1</td><td>6.68</td><td>21.20</td><td>0.31</td><td>67.00</td><td>16.75</td><td>7.00</td><td>13.75</td><td>26.85</td><td>39.22</td><td>16.48</td></tr>
+    <tr><td>38</td><td>Gardner Minshew II</td><td>Kansas City Chiefs</td><td>27.58</td><td>2</td><td>1</td><td>1</td><td>7.54</td><td>19.98</td><td>0.38</td><td>71.00</td><td>14.80</td><td>9.25</td><td>16.00</td><td>26.85</td><td>34.59</td><td>18.94</td></tr>
+    <tr><td>39</td><td>Jake Browning</td><td>Cincinnati Bengals</td><td>27.39</td><td>0</td><td>0</td><td>0</td><td>7.88</td><td>26.40</td><td>0.30</td><td>54.00</td><td>12.67</td><td>10.00</td><td>22.50</td><td>0.00</td><td>62.08</td><td>22.64</td></tr>
+    <tr><td>40</td><td>Tommy DeVito</td><td>New England Patriots</td><td>27.12</td><td>0</td><td>0</td><td>0</td><td>14.61</td><td>24.15</td><td>0.60</td><td>59.00</td><td>22.00</td><td>13.50</td><td>6.50</td><td>0.00</td><td>64.24</td><td>18.53</td></tr>
+    <tr><td>41</td><td>Sam Howell</td><td>Philadelphia Eagles</td><td>27.10</td><td>0</td><td>0</td><td>0</td><td>15.15</td><td>25.17</td><td>0.60</td><td>62.00</td><td>18.00</td><td>12.33</td><td>19.33</td><td>0.00</td><td>60.33</td><td>23.93</td></tr>
+    <tr><td>42</td><td>Zach Wilson</td><td>Miami Dolphins</td><td>25.85</td><td>0</td><td>0</td><td>0</td><td>7.52</td><td>21.93</td><td>0.34</td><td>58.00</td><td>23.50</td><td>14.00</td><td>20.50</td><td>0.00</td><td>54.42</td><td>27.22</td></tr>
+    <tr><td>43</td><td>Mac Jones</td><td>San Francisco 49ers</td><td>24.65</td><td>0</td><td>0</td><td>0</td><td>5.71</td><td>17.94</td><td>0.32</td><td>61.00</td><td>34.60</td><td>13.60</td><td>28.20</td><td>0.00</td><td>46.06</td><td>34.10</td></tr>
+    <tr><td>44</td><td>Joshua Dobbs</td><td>New England Patriots</td><td>24.59</td><td>0</td><td>0</td><td>0</td><td>5.47</td><td>22.00</td><td>0.25</td><td>59.00</td><td>29.33</td><td>13.17</td><td>22.33</td><td>0.00</td><td>49.46</td><td>29.12</td></tr>
+    <tr><td>45</td><td>Davis Mills</td><td>Houston Texans</td><td>24.34</td><td>0</td><td>0</td><td>0</td><td>5.67</td><td>17.34</td><td>0.33</td><td>54.00</td><td>12.60</td><td>6.40</td><td>19.40</td><td>0.00</td><td>56.55</td><td>18.19</td></tr>
+    <tr><td>46</td><td>Jacoby Brissett</td><td>Arizona Cardinals</td><td>23.39</td><td>0</td><td>0</td><td>0</td><td>6.86</td><td>24.76</td><td>0.28</td><td>62.00</td><td>21.00</td><td>11.40</td><td>23.60</td><td>0.00</td><td>47.97</td><td>26.41</td></tr>
+    <tr><td>47</td><td>Malik Willis</td><td>Green Bay Packers</td><td>23.33</td><td>0</td><td>0</td><td>0</td><td>23.81</td><td>26.50</td><td>0.90</td><td>70.00</td><td>17.33</td><td>6.33</td><td>1.33</td><td>0.00</td><td>60.17</td><td>9.09</td></tr>
+    <tr><td>48</td><td>Nick Mullens</td><td>Jacksonville Jaguars</td><td>22.84</td><td>1</td><td>1</td><td>1</td><td>1.88</td><td>31.13</td><td>0.06</td><td>69.00</td><td>5.67</td><td>1.75</td><td>8.50</td><td>23.15</td><td>33.95</td><td>6.80</td></tr>
+    <tr><td>49</td><td>Joe Flacco</td><td>Cincinnati Bengals</td><td>22.80</td><td>0</td><td>0</td><td>0</td><td>4.84</td><td>21.77</td><td>0.22</td><td>54.00</td><td>7.29</td><td>1.57</td><td>18.86</td><td>0.00</td><td>55.89</td><td>12.94</td></tr>
+    <tr><td>50</td><td>Kenny Pickett</td><td>Las Vegas Raiders</td><td>22.67</td><td>0</td><td>0</td><td>0</td><td>5.46</td><td>17.83</td><td>0.31</td><td>60.00</td><td>26.75</td><td>11.00</td><td>18.75</td><td>0.00</td><td>47.04</td><td>24.82</td></tr>
+    <tr><td>51</td><td>Case Keenum</td><td>Chicago Bears</td><td>22.59</td><td>2</td><td>1</td><td>1</td><td>5.55</td><td>14.60</td><td>0.38</td><td>71.00</td><td>6.33</td><td>1.33</td><td>4.33</td><td>26.85</td><td>30.79</td><td>4.29</td></tr>
+    <tr><td>52</td><td>Brandon Allen</td><td>Tennessee Titans</td><td>20.05</td><td>0</td><td>0</td><td>0</td><td>13.93</td><td>21.53</td><td>0.65</td><td>64.00</td><td>4.33</td><td>0.33</td><td>1.33</td><td>0.00</td><td>56.32</td><td>1.34</td></tr>
+    <tr><td>53</td><td>Kyle Allen</td><td>Detroit Lions</td><td>18.21</td><td>0</td><td>0</td><td>0</td><td>3.89</td><td>10.08</td><td>0.39</td><td>56.00</td><td>6.00</td><td>0.50</td><td>2.00</td><td>0.00</td><td>50.42</td><td>2.26</td></tr>
+    <tr><td>54</td><td>Jordan Love</td><td>Green Bay Packers</td><td>16.63</td><td>0</td><td>0</td><td>0</td><td>3.48</td><td>17.42</td><td>0.20</td><td>70.00</td><td>23.80</td><td>11.40</td><td>24.80</td><td>0.00</td><td>27.65</td><td>27.80</td></tr>
+    <tr><td>55</td><td>Jarrett Stidham</td><td>Denver Broncos</td><td>16.46</td><td>0</td><td>0</td><td>0</td><td>8.69</td><td>26.70</td><td>0.33</td><td>71.00</td><td>7.00</td><td>7.00</td><td>12.50</td><td>0.00</td><td>37.54</td><td>13.31</td></tr>
+    <tr><td>56</td><td>Josh Johnson</td><td>Washington Commanders</td><td>16.39</td><td>0</td><td>0</td><td>0</td><td>7.02</td><td>25.98</td><td>0.27</td><td>65.00</td><td>4.80</td><td>2.00</td><td>3.40</td><td>0.00</td><td>44.06</td><td>3.87</td></tr>
+    <tr><td>57</td><td>Mason Rudolph</td><td>Pittsburgh Steelers</td><td>15.75</td><td>0</td><td>0</td><td>0</td><td>3.03</td><td>8.95</td><td>0.34</td><td>62.00</td><td>10.75</td><td>4.00</td><td>6.75</td><td>0.00</td><td>38.74</td><td>8.76</td></tr>
+    <tr><td>58</td><td>Drew Lock</td><td>Seattle Seahawks</td><td>15.62</td><td>0</td><td>0</td><td>0</td><td>5.26</td><td>16.88</td><td>0.31</td><td>66.00</td><td>9.50</td><td>5.00</td><td>8.25</td><td>0.00</td><td>37.47</td><td>10.04</td></tr>
+    <tr><td>59</td><td>Cooper Rush</td><td>Baltimore Ravens</td><td>14.69</td><td>0</td><td>0</td><td>0</td><td>4.02</td><td>14.50</td><td>0.28</td><td>65.00</td><td>12.00</td><td>1.40</td><td>9.00</td><td>0.00</td><td>35.97</td><td>8.42</td></tr>
+    <tr><td>60</td><td>Sean Clifford</td><td>Cincinnati Bengals</td><td>11.14</td><td>0</td><td>0</td><td>0</td><td>0.00</td><td>0.00</td><td>0.00</td><td>54.00</td><td>3.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>31.82</td><td>0.00</td></tr>
+    <tr><td>61</td><td>Tyson Bagent</td><td>Chicago Bears</td><td>8.14</td><td>0</td><td>0</td><td>0</td><td>1.13</td><td>12.13</td><td>0.09</td><td>71.00</td><td>10.33</td><td>4.00</td><td>3.67</td><td>0.00</td><td>18.33</td><td>6.91</td></tr>
+    <tr><td>62</td><td>Mitchell Trubisky</td><td>Buffalo Bills</td><td>7.58</td><td>0</td><td>0</td><td>0</td><td>2.38</td><td>8.74</td><td>0.27</td><td>75.00</td><td>13.80</td><td>3.20</td><td>3.80</td><td>0.00</td><td>16.46</td><td>7.27</td></tr>
+
+    <tr class="dw-empty" style="display:none;"><td colspan="17">No matches found.</td></tr>
+  </tbody>
+</table>
+            </div>
+          </div>
+
+          <div class="dw-footer" role="contentinfo">
+            <a class="dw-brand-left" href="#" aria-label="Brand name"></a>
+            <span></span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Teams TAB ===== -->
+    <div id="teams-panel" class="tab-panel">
+      <section>
+        <div class="dw-root" data-dw="table"
+             style="--logo-h:34px;
+                    --stripe:#DCF2EB;
+                    --hover:#BCE5D6;
+                    --header-bg:#56C257;
+                    --header-fg:#ffffff;
+                    --scroll-track:#f7f8fb;
+                    --scroll-thumb:#56C257;
+                    --scroll-thumb-hover:#3FA94B;
+                    --table-max-h:500px;
+                    --vbar-w:6px; --vbar-w-hover:8px;">
+
+          <div class="dw-controls">
+            <div class="left">
+              <div class="dw-field">
+                <input type="search" class="dw-input" placeholder="Search table…" aria-label="Search table">
+                <button type="button" class="dw-clear" aria-label="Clear search">×</button>
+              </div>
+              <span class="dw-status dw-counter" aria-live="polite"></span>
+            </div>
+
+            <div class="center">
+              <div class="dw-top-brand" aria-label="Brand">
+                <div class="dw-top-logo" aria-hidden="true"></div>
+                <img class="dw-top-logo-img"
+                     src="https://i.postimg.cc/x1nG117r/AN-final2-logo.png"
+                     alt="Action Network logo" loading="lazy">
+              </div>
+            </div>
+
+            <div class="right">
+              <label class="dw-status" for="dw-size-teams" style="margin-right:4px;">Rows/page</label>
+              <select id="dw-size-teams" class="dw-select">
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="0">All</option>
+              </select>
+              <button class="dw-btn" data-page="prev" aria-label="Previous page">‹</button>
+              <button class="dw-btn" data-page="next" aria-label="Next page">›</button>
+            </div>
+          </div>
+
+          <div class="dw-card">
+            <div class="dw-scroll">
+              <!-- *** TEAMS TABLE – REPLACE THIS WITH YOUR TEAM RANKING DATA *** -->
+<table class="dw-table">
+  <thead>
+    <tr>
+      <th scope="col" data-type="num">Rank</th>
+      <th scope="col" data-type="text">Team</th>
+      <th scope="col" data-type="num">Risk Index</th>
+      <th scope="col" data-type="num">Rank Average</th>
+      <th scope="col" data-type="num">Number of QBs</th>
+      <th scope="col" data-type="num">Team Index</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr><td>1</td><td>Cincinnati Bengals</td><td>48.66</td><td>3</td><td>4</td><td>194.65</td></tr>
+    <tr><td>2</td><td>Indianapolis Colts</td><td>55.12</td><td>2</td><td>2</td><td>110.23</td></tr>
+    <tr><td>3</td><td>Pittsburgh Steelers</td><td>32.47</td><td>12</td><td>3</td><td>97.41</td></tr>
+    <tr><td>4</td><td>Las Vegas Raiders</td><td>32.08</td><td>13</td><td>3</td><td>96.23</td></tr>
+    <tr><td>5</td><td>Los Angeles Chargers</td><td>47.20</td><td>4</td><td>2</td><td>94.40</td></tr>
+    <tr><td>6</td><td>Arizona Cardinals</td><td>45.80</td><td>5</td><td>2</td><td>91.59</td></tr>
+    <tr><td>7</td><td>Baltimore Ravens</td><td>28.96</td><td>21</td><td>3</td><td>86.88</td></tr>
+    <tr><td>8</td><td>Washington Commanders</td><td>38.75</td><td>6</td><td>2</td><td>77.50</td></tr>
+    <tr><td>9</td><td>New York Jets</td><td>36.02</td><td>8</td><td>2</td><td>72.04</td></tr>
+    <tr><td>10</td><td>Miami Dolphins</td><td>35.71</td><td>9</td><td>2</td><td>71.41</td></tr>
+    <tr><td>11</td><td>New York Giants</td><td>35.51</td><td>10</td><td>2</td><td>71.02</td></tr>
+    <tr><td>12</td><td>Seattle Seahawks</td><td>33.47</td><td>11</td><td>2</td><td>66.95</td></tr>
+    <tr><td>13</td><td>Tennessee Titans</td><td>31.70</td><td>14</td><td>2</td><td>63.39</td></tr>
+    <tr><td>14</td><td>Cleveland Browns</td><td>62.49</td><td>1</td><td>1</td><td>62.49</td></tr>
+    <tr><td>15</td><td>Tampa Bay Buccaneers</td><td>30.53</td><td>16</td><td>2</td><td>61.07</td></tr>
+    <tr><td>16</td><td>Philadelphia Eagles</td><td>30.51</td><td>17</td><td>2</td><td>61.01</td></tr>
+    <tr><td>17</td><td>Jacksonville Jaguars</td><td>29.51</td><td>18</td><td>2</td><td>59.02</td></tr>
+    <tr><td>18</td><td>Houston Texans</td><td>29.28</td><td>19</td><td>2</td><td>58.56</td></tr>
+    <tr><td>19</td><td>Carolina Panthers</td><td>28.53</td><td>22</td><td>2</td><td>57.07</td></tr>
+    <tr><td>20</td><td>Los Angeles Rams</td><td>28.51</td><td>23</td><td>2</td><td>57.01</td></tr>
+    <tr><td>21</td><td>San Francisco 49ers</td><td>27.95</td><td>24</td><td>2</td><td>55.89</td></tr>
+    <tr><td>22</td><td>Kansas City Chiefs</td><td>26.77</td><td>25</td><td>2</td><td>53.55</td></tr>
+    <tr><td>23</td><td>Detroit Lions</td><td>25.85</td><td>26</td><td>2</td><td>51.71</td></tr>
+    <tr><td>24</td><td>Buffalo Bills</td><td>23.94</td><td>27</td><td>2</td><td>47.89</td></tr>
+    <tr><td>25</td><td>New England Patriots</td><td>19.98</td><td>28</td><td>2</td><td>39.96</td></tr>
+    <tr><td>26</td><td>Minnesota Vikings</td><td>36.34</td><td>7</td><td>1</td><td>36.34</td></tr>
+    <tr><td>27</td><td>Green Bay Packers</td><td>18.12</td><td>29</td><td>2</td><td>36.23</td></tr>
+    <tr><td>28</td><td>Chicago Bears</td><td>16.46</td><td>30</td><td>2</td><td>32.93</td></tr>
+    <tr><td>29</td><td>Dallas Cowboys</td><td>31.35</td><td>15</td><td>1</td><td>31.35</td></tr>
+    <tr><td>30</td><td>Atlanta Falcons</td><td>29.09</td><td>20</td><td>1</td><td>29.09</td></tr>
+    <tr><td>30</td><td>Denver Broncos</td><td>15.36</td><td>31</td><td>1</td><td>15.36</td></tr>
+
+    <tr class="dw-empty" style="display:none;"><td colspan="6">No matches found.</td></tr>
+  </tbody>
+</table>
+            </div>
+          </div>
+
+          <div class="dw-footer" role="contentinfo">
+            <a class="dw-brand-left" href="#" aria-label="Brand name"></a>
+            <span></span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ----- Tabs -----
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.dataset.tab;
+
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+
+    // ----- Table logic (generalised to any .dw-root) -----
+    (function(){
+      function DWTableInit(root){
+        if (!root || root.dataset.dwInit === '1') return;
+        root.dataset.dwInit = '1';
+
+        const table = root.querySelector('table.dw-table');
+        const tb = table ? table.tBodies[0] : null;
+        const scroller = root.querySelector('.dw-scroll');
+        const controls = root.querySelector('.dw-controls');
+        if(!table || !tb || !scroller || !controls) return;
+
+        if (table.tHead && table.tHead.rows[0].cells.length <= 4) {
+          scroller.classList.add('no-scroll');
+        }
+
+        const field = controls.querySelector('.dw-field');
+        const searchInput = controls.querySelector('.dw-input');
+        const clearBtn = controls.querySelector('.dw-clear');
+        const statusEl = controls.querySelector('.dw-counter');
+        const sizeSel = controls.querySelector('.dw-select');
+        const buttons = controls.querySelectorAll('[data-page]');
+        const prevBtn = controls.querySelector('[data-page="prev"]');
+        const nextBtn = controls.querySelector('[data-page="next"]');
+        const emptyRow = tb.querySelector('.dw-empty');
+
+        Array.from(tb.rows).forEach((r,i)=>{ if(!r.classList.contains('dw-empty')) r.dataset.idx=i; });
+
+        let pageSize = parseInt(sizeSel.value,10) || 10;
+        let page = 1;
+        let filter = '';
+
+        const onScrollShadow = ()=> scroller.classList.toggle('scrolled', scroller.scrollTop > 0);
+        scroller.addEventListener('scroll', onScrollShadow); onScrollShadow();
+
+        const heads = Array.from(table.tHead.rows[0].cells);
+        heads.forEach((th,i)=>{
+          th.classList.add('sortable');
+          th.setAttribute('aria-sort','none');
+          th.dataset.sort='none';
+          th.tabIndex=0;
+          const type = th.dataset.type || 'text';
+          const go = ()=> sortBy(i,type,th);
+          th.addEventListener('click',go);
+          th.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+        });
+
+        function textOf(tr,i){ return (tr.children[i].innerText||'').trim(); }
+        function clearSortedClasses(){
+          heads.forEach(h=>h.classList.remove('is-sorted'));
+          Array.from(tb.rows).forEach(r=>Array.from(r.cells).forEach(c=>c.classList.remove('is-sorted')));
+        }
+        function markSortedColumn(colIdx){
+          heads[colIdx]?.classList.add('is-sorted');
+          Array.from(tb.rows).forEach(r=>{ const c=r.cells[colIdx]; if(c) c.classList.add('is-sorted'); });
+        }
+
+        function sortBy(colIdx, type, th){
+          const rows = Array.from(tb.rows).filter(r=>!r.classList.contains('dw-empty'));
+          const current = th.dataset.sort || 'none';
+          const next = current==='none' ? 'asc' : current==='asc' ? 'desc' : 'none';
+
+          heads.forEach(h=>{ h.dataset.sort='none'; h.setAttribute('aria-sort','none'); h.classList.remove('is-sorted'); });
+
+          if(next === 'none'){
+            rows.sort((a,b)=>(+a.dataset.idx)-(+b.dataset.idx));
+            rows.forEach(r=>tb.insertBefore(r, emptyRow));
+            clearSortedClasses();
+            renderPage();
+            return;
+          }
+
+          th.dataset.sort = next;
+          th.setAttribute('aria-sort', next==='asc'?'ascending':'descending');
+
+          const mul = next==='asc'?1:-1;
+          rows.sort((a,b)=>{
+            let v1=textOf(a,colIdx), v2=textOf(b,colIdx);
+            if((type||'text')==='num'){
+              v1=parseFloat(v1.replace(/[^0-9.\-]/g,'')); if(isNaN(v1)) v1=-Infinity;
+              v2=parseFloat(v2.replace(/[^0-9.\-]/g,'')); if(isNaN(v2)) v2=-Infinity;
+            }else{
+              v1=(v1+'').toLowerCase(); v2=(v2+'').toLowerCase();
+            }
+            if(v1>v2) return 1*mul;
+            if(v1<v2) return -1*mul;
+            return 0;
+          });
+          rows.forEach(r=>tb.insertBefore(r, emptyRow));
+          clearSortedClasses(); markSortedColumn(colIdx);
+          renderPage();
+        }
+
+        function applyZebra(shown){
+          Array.from(tb.rows).forEach(r=>r.classList.remove('dw-zebra'));
+          shown.forEach((r,idx)=>{ if(idx % 2 === 0) r.classList.add('dw-zebra'); });
+        }
+        function matchesFilter(tr){ return !tr.classList.contains('dw-empty') && tr.innerText.toLowerCase().includes(filter); }
+
+        function renderPage(){
+          const ordered = Array.from(tb.rows).filter(r=>!r.classList.contains('dw-empty'));
+          const visible = ordered.filter(matchesFilter);
+          const total = visible.length;
+
+          ordered.forEach(r=>r.style.display='none');
+          let shown = [];
+
+          if(total===0){
+            if(emptyRow){ emptyRow.style.display='table-row'; emptyRow.firstElementChild.colSpan = heads.length; }
+            if(statusEl) statusEl.textContent = "";
+            prevBtn.disabled = nextBtn.disabled = true;
+          }else{
+            if(emptyRow) emptyRow.style.display='none';
+            if(pageSize===0){
+              shown = visible;
+              if(statusEl) statusEl.textContent = "";
+              prevBtn.disabled = nextBtn.disabled = true;
+            }else{
+              const pages = Math.max(1, Math.ceil(total / pageSize));
+              page = Math.min(Math.max(1, page), pages);
+              const start = (page-1)*pageSize, end = start + pageSize;
+              shown = visible.slice(start,end);
+              if(statusEl) statusEl.textContent = "";
+              prevBtn.disabled = page<=1; nextBtn.disabled = page>=pages;
+            }
+          }
+
+          shown.forEach(r=>r.style.display='table-row');
+          applyZebra(shown);
+        }
+
+        const fieldSync = ()=> field.classList.toggle('has-value', !!searchInput.value);
+        let t=null;
+        searchInput.addEventListener('input', e=>{
+          fieldSync();
+          clearTimeout(t);
+          t=setTimeout(()=>{ filter=(e.target.value||'').toLowerCase().trim(); page=1; renderPage(); },120);
+        });
+        clearBtn.addEventListener('click', ()=>{
+          searchInput.value='';
+          fieldSync();
+          filter='';
+          page=1;
+          renderPage();
+          searchInput.focus();
+        });
+        fieldSync();
+
+        sizeSel.addEventListener('change', e=>{
+          pageSize = parseInt(e.target.value,10) || 0;
+          page=1;
+          renderPage();
+        });
+        buttons.forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const dir = btn.dataset.page === 'next' ? 1 : -1;
+            page += dir;
+            renderPage();
+          });
+        });
+
+        const LOGO_URL   = "https://i.postimg.cc/x1nG117r/AN-final2-logo.png";
+        const BRAND_NAME = "";
+        const BRAND_HREF = "";
+
+        const topWrap = root.querySelector('.dw-top-brand');
+        const topLogo = root.querySelector('.dw-top-logo');
+        const topImg  = root.querySelector('.dw-top-logo-img');
+
+        if (LOGO_URL) topLogo.style.setProperty('--logo-url', `url("${LOGO_URL}")`);
+        topWrap.style.display = 'flex';
+
+        const supportsMask =
+          (window.CSS && (CSS.supports('mask-image', 'url("")') || CSS.supports('-webkit-mask-image', 'url("")')));
+
+        const probe = new Image();
+        probe.onload = () => {
+          if (supportsMask) {
+            const color = (getComputedStyle(root).getPropertyValue('--header-bg') || '#56C257').trim();
+            topLogo.style.backgroundColor = color;
+            topLogo.style.webkitMaskImage  = `url("${LOGO_URL}")`;
+            topLogo.style.maskImage        = `url("${LOGO_URL}")`;
+            topLogo.style.webkitMaskRepeat = 'no-repeat';
+            topLogo.style.maskRepeat       = 'no-repeat';
+            topLogo.style.webkitMaskPosition = 'center';
+            topLogo.style.maskPosition       = 'center';
+            topLogo.style.webkitMaskSize   = 'contain';
+            topLogo.style.maskSize         = 'contain';
+            root.classList.add('logo-mask-ok');
+          } else {
+            if (topImg && !topImg.getAttribute('src')) topImg.src = LOGO_URL;
+            root.classList.remove('logo-mask-ok');
+          }
+        };
+        probe.onerror = () => {
+          if (topImg && !topImg.getAttribute('src')) topImg.src = LOGO_URL;
+          root.classList.remove('logo-mask-ok');
+        };
+        probe.src = LOGO_URL;
+
+        const footer    = root.querySelector('.dw-footer');
+        const brandLeft = root.querySelector('.dw-brand-left');
+        if (BRAND_NAME){
+          brandLeft.textContent = BRAND_NAME;
+          if (BRAND_HREF) brandLeft.href = BRAND_HREF;
+          brandLeft.style.display = "inline-block";
+        } else {
+          footer.style.display = "none";
+        }
+
+        renderPage();
+      }
+
+      document.querySelectorAll('.dw-root').forEach(DWTableInit);
+
+      // optional: keep iframe parents in sync if this is ever embedded
+      function sendHeightToParent() {
+        try {
+          const height = document.body.scrollHeight;
+          window.parent.postMessage({ type: "resize-iframe", height: height, src: window.location.href }, "*");
+        } catch (e) {}
+      }
+      window.addEventListener("load", sendHeightToParent);
+      window.addEventListener("resize", sendHeightToParent);
+      const observer = new MutationObserver(sendHeightToParent);
+      observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    })();
+  </script>
+</body>
+</html>
