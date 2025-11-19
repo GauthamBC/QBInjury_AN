@@ -20,10 +20,14 @@
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
       padding: 24px 20px 28px;
     }
-    h1 {
-      margin: 0 0 16px;
-      font-size: 24px;
-    }
+h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+  justify-self: center;
+  color: #000; /* keep the text black */
+  text-shadow: 0 0 4px rgba(86, 194, 87, 0.45);
+}
+
     .tabs {
       /* make the tab bar span the full content width */
       display: grid;
@@ -175,7 +179,7 @@
     .dw-root .dw-top-brand{
       display:flex;
       align-items:center;
-      justify-content:center;
+      
     }
     .dw-root .dw-top-logo{
       display:block;
@@ -290,22 +294,36 @@
     .dw-root tbody tr:nth-child(odd){background:var(--stripe,#DCF2EB)}
     .dw-root tbody tr:hover{background:var(--hover,#BCE5D6); box-shadow:inset 3px 0 0 var(--brand-500)}
 
-    .dw-root .dw-scroll{
-      max-height:var(--table-max-h,500px);
-      overflow-y:auto;
-      -ms-overflow-style:auto;
-      scrollbar-width:thin;
-      scrollbar-color:var(--scroll-thumb,#56C257) transparent;
-    }
-    .dw-root .dw-scroll::-webkit-scrollbar:horizontal{height:0; display:none}
-    .dw-root .dw-scroll::-webkit-scrollbar:vertical{width:var(--vbar-w,6px)}
-    .dw-root .dw-scroll:hover::-webkit-scrollbar:vertical{width:var(--vbar-w-hover,8px)}
-    .dw-root .dw-scroll::-webkit-scrollbar-thumb{
-      background:var(--scroll-thumb,#56C257);
-      border-radius:9999px;
-      border:2px solid transparent;
-      background-clip:content-box;
-    }
+.dw-root .dw-scroll{
+  max-height:var(--table-max-h,500px);
+  overflow-y:auto;
+  -ms-overflow-style:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--scroll-thumb,#56C257) transparent;
+}
+
+/* Horizontal scrollbar – thinner */
+.dw-root .dw-scroll::-webkit-scrollbar:horizontal {
+  height: 3px;
+}
+
+/* Vertical scrollbar – thinner */
+.dw-root .dw-scroll::-webkit-scrollbar:vertical {
+  width: 3px;
+}
+
+.dw-root .dw-scroll:hover::-webkit-scrollbar:vertical {
+  width: 4px;
+}
+
+/* Thumb – slim green bar */
+.dw-root .dw-scroll::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb, #56C257);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
 
     .dw-root tbody tr{background:transparent!important}
     .dw-root tbody tr.dw-zebra{background:var(--stripe,#DCF2EB)!important}
@@ -358,34 +376,88 @@
     .dw-root .dw-select { min-width: 68px; }
     .dw-root .dw-btn { padding-inline: 8px; }
 
-    @media (min-width:601px) and (max-width:980px){
-      .dw-root .right > .dw-status{display:inline; font-size:0;}
-      .dw-root .right > .dw-status::after{content:"Rows"; font-size:12px;}
-      .dw-root .dw-input { width: clamp(150px, 22vw, 260px); }
-    }
-    @media (max-width: 600px){
-      .page-container { padding: 16px 12px 20px; }
-      h1 { font-size: 20px; }
-      .dw-root .dw-controls{
-        display:grid;
-        grid-template-columns:minmax(0,1fr) auto auto;
-        align-items:center;
-        column-gap:8px;
-        row-gap:0;
-        margin:6px 0 8px;
-      }
-      .dw-root .dw-field{width:100%; max-width:46vw;}
-      .dw-root .dw-input{width:100%; padding:6px 24px 6px 10px; height:34px; font-size:13px;}
-      .dw-root .dw-clear{width:20px; height:20px;}
-      .dw-root thead th{ font-size:13px; line-height:1.2; }
-      .dw-root .dw-top-logo,
-      .dw-root .dw-top-logo-img{ height:18px; width:120px; }
-      .dw-root .right{justify-content:flex-end; gap:6px;}
-      .dw-root .right .dw-status{display:none;}
-      .dw-root .dw-select{min-width:68px; height:32px; padding:6px 22px 6px 8px; font-size:13px;}
-      .dw-root .dw-btn{width:32px; height:32px; padding:0; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;}
-    }
+@media (max-width: 980px){
+  .page-container { padding: 16px 12px 20px; }
+  h1 { font-size: 20px; }
 
+  /* Use grid: logo full row, then search (left) + pager (right) on same row */
+  .dw-root .dw-controls{
+    display:grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    grid-template-areas:
+      "center center"
+      "left   right";
+    align-items:center;
+    gap:8px;
+    margin:6px 0 8px;
+  }
+
+  .dw-root .left{
+    grid-area:left;
+    display:flex;
+    align-items:center;
+    min-width:0;
+  }
+
+  .dw-root .center{
+    grid-area:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .dw-root .right{
+    grid-area:right;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    white-space:nowrap;
+    min-width:0;
+  }
+
+  /* Search should fill its cell */
+  .dw-root .dw-field{
+    width:100%;
+    max-width:none;
+  }
+
+  .dw-root .dw-input{
+    width:100%;
+    padding:6px 24px 6px 10px;
+    height:34px;
+    font-size:13px;
+  }
+
+  .dw-root .dw-clear{ width:20px; height:20px; }
+  .dw-root thead th{ font-size:13px; line-height:1.2; }
+
+  .dw-root .dw-top-logo,
+  .dw-root .dw-top-logo-img{
+    height:18px;
+    width:120px;
+  }
+
+  /* hide “Rows/page” label to save space */
+  .dw-root .right .dw-status{ display:none; }
+
+  .dw-root .dw-select{
+    min-width:68px;
+    height:32px;
+    padding:6px 22px 6px 8px;
+    font-size:13px;
+  }
+
+  .dw-root .dw-btn{
+    width:32px;
+    height:32px;
+    padding:0;
+    border-radius:12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+}
     /* Logo size override (applies to both tables) */
     .dw-root .dw-top-logo{ height: 64px; width: 260px; }
     .dw-root .dw-top-logo-img{ height: 64px; width: auto; }
@@ -393,6 +465,7 @@
       .dw-root .dw-top-logo{ height: 44px; width: 160px; }
       .dw-root .dw-top-logo-img{ height: 44px; }
     }
+
   </style>
 </head>
 <body>
@@ -418,7 +491,7 @@
                     --scroll-thumb:#56C257;
                     --scroll-thumb-hover:#3FA94B;
                     --table-max-h:500px;
-                    --vbar-w:6px; --vbar-w-hover:8px;">
+                    --vbar-w:4px; --vbar-w-hover:5px;">
           <!-- controls + table (YOUR ORIGINAL CONTENT) -->
           <div class="dw-controls">
             <div class="left">
@@ -567,7 +640,7 @@
                     --scroll-thumb:#56C257;
                     --scroll-thumb-hover:#3FA94B;
                     --table-max-h:500px;
-                    --vbar-w:6px; --vbar-w-hover:8px;">
+                    --vbar-w:4px; --vbar-w-hover:5px;">
 
           <div class="dw-controls">
             <div class="left">
